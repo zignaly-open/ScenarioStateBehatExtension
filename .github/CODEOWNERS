@@ -1,0 +1,3 @@
+# Require review from security-aware team for workflow changes
+.github/workflows/ @zignaly-open/admins
+.github/ @zignaly-open/admins
