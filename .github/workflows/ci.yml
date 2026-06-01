@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege: CI only reads the repo. No job writes to the repo,
+# packages, or issues. Escalate per-job if ever needed.
+permissions:
+  contents: read
+
+# Cancel superseded runs for the same ref (e.g. force-pushes to a PR branch).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: "PHP ${{ matrix.php }} / ${{ matrix.dependencies }} deps"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.4"]
+        # "lowest" validates the declared floors (behat ^3.31, symfony ^6.4);
+        # "highest" guards against breaks in newer releases (symfony 7.x).
+        dependencies: ["lowest", "highest"]
+
+    steps:
+      # Actions are pinned to a full commit SHA (Dependabot bumps them via the
+      # trailing version comment) to defend against mutable-tag hijacking.
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # 2.37.1
+        with:
+          php-version: "${{ matrix.php }}"
+          extensions: mbstring, intl, dom, json
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install dependencies (${{ matrix.dependencies }})
+        uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # 3.2.1
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+
+      - name: Security audit
+        run: composer audit --abandoned=report
+
+      - name: PHPUnit (unit suite)
+        run: vendor/bin/phpunit
+
+      # Run from the repo root: the acceptance fixture shells out via Symfony
+      # Process to run behat against testapp/ and builds its own working
+      # directory, so do not set a working-directory here.
+      - name: Behat (acceptance suite)
+        run: vendor/bin/behat --strict --no-interaction
