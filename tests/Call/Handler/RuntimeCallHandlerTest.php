@@ -36,6 +36,18 @@ class RuntimeCallHandlerTest extends TestCase
     {
     }
 
+    public function withNullableType(?RuntimeCallHandlerScopeFixture $scope): void
+    {
+    }
+
+    public function withUnionType(RuntimeCallHandlerScopeFixture|\stdClass $scope): void
+    {
+    }
+
+    public function withIntersectionType(RuntimeCallHandlerScopeFixtureInterface&\Countable $scope): void
+    {
+    }
+
     public function withBuiltinType(string $scope): void
     {
     }
@@ -49,6 +61,9 @@ class RuntimeCallHandlerTest extends TestCase
         return [
             'exact class type matches'        => ['withExactType', true],
             'interface/parent type matches'   => ['withInterfaceType', true],
+            'nullable class type matches'     => ['withNullableType', true],
+            'union type is skipped'           => ['withUnionType', false],
+            'intersection type is skipped'    => ['withIntersectionType', false],
             'builtin type is skipped'         => ['withBuiltinType', false],
             'untyped parameter is skipped'    => ['withoutType', false],
         ];

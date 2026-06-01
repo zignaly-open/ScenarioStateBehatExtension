@@ -14,7 +14,7 @@ verified: true
 
 # Upgrading a Behat extension library to PHP 8.4 / Symfony 6.4+ (clean-break 2.0)
 
-> **Checkpoint note:** This is a **planning-phase** learning captured before implementation. The decisions and breaker inventory below are research-verified (against a real `behat/behat:v3.31.0` install on PHP 8.4 and official changelogs), but the end-to-end fix is **not yet runtime-verified**. Update `verified: true` and add the green-CI evidence once the 2.0 PR lands.
+> **Status:** Implemented and runtime-verified in PR #3 (branch `chore/php84-symfony64-upgrade`): `phpunit` 12 tests/36 assertions green and `behat --strict` 3 scenarios/6 steps green on PHP 8.4.21, against a real `behat/behat:v3.31.0` install. The decisions and breaker inventory below are both research-verified (official changelogs) and confirmed by that green suite.
 
 ## Problem
 
