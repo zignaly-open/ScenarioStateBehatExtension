@@ -18,12 +18,9 @@ use Behat\Testwork\EventDispatcher\ServiceContainer\EventDispatcherExtension;
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Gorghoa\ScenarioStateBehatExtension\Argument\ScenarioStateArgumentOrganiser;
 use Gorghoa\ScenarioStateBehatExtension\Call\Handler\RuntimeCallHandler;
 use Gorghoa\ScenarioStateBehatExtension\Context\Initializer\ScenarioStateInitializer;
-use Gorghoa\ScenarioStateBehatExtension\Hook\Dispatcher\ScenarioStateHookDispatcher;
-use Gorghoa\ScenarioStateBehatExtension\Hook\Tester\ScenarioStateHookableScenarioTester;
 use Gorghoa\ScenarioStateBehatExtension\Resolver\ArgumentsResolver;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -38,8 +35,6 @@ use Symfony\Component\DependencyInjection\Reference;
 class ScenarioStateExtension implements ExtensionInterface
 {
     const SCENARIO_STATE_ARGUMENT_ORGANISER_ID = 'argument.scenario_state.organiser';
-    const SCENARIO_STATE_DISPATCHER_ID = 'hook.scenario_state.dispatcher';
-    const SCENARIO_STATE_TESTER_ID = 'tester.scenario_state.wrapper';
     const SCENARIO_STATE_CALL_HANDLER_ID = 'call.scenario_state.call_handler';
     const SCENARIO_STATE_ARGUMENTS_RESOLVER_ID = 'scenario_state.arguments_resolver';
     const SCENARIO_STATE_STORE_ID = 'behatstore.context_initializer.store_aware';
@@ -58,7 +53,9 @@ class ScenarioStateExtension implements ExtensionInterface
      */
     public function initialize(ExtensionManager $extensionManager)
     {
-        AnnotationRegistry::registerFile(__DIR__.'/../Annotation/ScenarioStateArgument.php');
+        // doctrine/annotations 2.0 resolves annotation classes via the Composer
+        // autoloader; the removed AnnotationRegistry::registerFile() is no
+        // longer needed.
     }
 
     /**
