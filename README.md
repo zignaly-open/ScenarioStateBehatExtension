@@ -1,11 +1,18 @@
 # ScenarioStateBehatExtension
 
-[![Build Status](https://travis-ci.org/gorghoa/ScenarioStateBehatExtension.svg?branch=master)](https://travis-ci.org/gorghoa/ScenarioStateBehatExtension)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gorghoa/ScenarioStateBehatExtension/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gorghoa/ScenarioStateBehatExtension/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/gorghoa/ScenarioStateBehatExtension/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/gorghoa/ScenarioStateBehatExtension/?branch=master)
+[![CI](https://github.com/zignaly-open/ScenarioStateBehatExtension/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/zignaly-open/ScenarioStateBehatExtension/actions/workflows/ci.yml)
 
+## Requirements
 
-:warning: This projet is not maintained anymore. Still, anyone interested to take over is welcome to do so :).
+The `2.x` line targets a modern stack:
+
+| Dependency | Constraint |
+|------------|------------|
+| PHP        | `>=8.4`    |
+| Symfony    | `^6.4 \|\| ^7.0` |
+| Behat      | `^3.31`    |
+
+The public API (the `@ScenarioStateArgument` annotation and `ScenarioStateAwareContext`/`ScenarioStateAwareTrait`) is unchanged from `1.x`; only the platform floor was raised. Projects still on PHP 7 / Symfony 2–6 should stay on the `1.x` line.
 
 ## When to use
 
@@ -24,7 +31,7 @@ one. This is the case for this extension.
 
 
 ```bash
-composer require --dev gorghoa/scenariostate-behat-extension @RC
+composer require --dev gorghoa/scenariostate-behat-extension ^2.0
 ```
 
 Then update your project's `behat.yml` config file by loading the extension:
@@ -119,9 +126,9 @@ use Gorghoa\ScenarioStateBehatExtension\Annotation\ScenarioStateArgument;
 public function giveBananaToGorilla($monkey, $scenarioBanana, Bonobo $bonobo)
 {
     // (note that PHPUnit is here only given as an example, feel free to use any asserter you want)
-    \PHPUnit_Framework_Assert::assertEquals($monkey, 'gorilla');
-    \PHPUnit_Framework_Assert::assertEquals($scenarioBanana, 'Yammy Banana');
-    \PHPUnit_Framework_Assert::assertEquals($bonobo->getName(), 'Gerard');
+    \PHPUnit\Framework\Assert::assertEquals($monkey, 'gorilla');
+    \PHPUnit\Framework\Assert::assertEquals($scenarioBanana, 'Yammy Banana');
+    \PHPUnit\Framework\Assert::assertEquals($bonobo->getName(), 'Gerard');
 }
 ```
 
@@ -146,8 +153,8 @@ use Gorghoa\ScenarioStateBehatExtension\Annotation\ScenarioStateArgument;
 public function checkBananaBeforeScenario($scenarioBanana, BeforeScenarioScope $scope)
 {
     // (note that PHPUnit is here only given as an example, feel free to use any asserter you want)
-    \PHPUnit_Framework_Assert::assertEquals($scenarioBanana, 'Yammy Banana');
-    \PHPUnit_Framework_Assert::assertNotNull($scope);
+    \PHPUnit\Framework\Assert::assertEquals($scenarioBanana, 'Yammy Banana');
+    \PHPUnit\Framework\Assert::assertNotNull($scope);
 }
 
 /**
@@ -161,8 +168,8 @@ public function checkBananaBeforeScenario($scenarioBanana, BeforeScenarioScope $
 public function checkBananaAfterScenario($scenarioBanana, AfterScenarioScope $scope)
 {
     // (note that PHPUnit is here only given as an example, feel free to use any asserter you want)
-    \PHPUnit_Framework_Assert::assertEquals($scenarioBanana, 'Yammy Banana');
-    \PHPUnit_Framework_Assert::assertNotNull($scope);
+    \PHPUnit\Framework\Assert::assertEquals($scenarioBanana, 'Yammy Banana');
+    \PHPUnit\Framework\Assert::assertNotNull($scope);
 }
 ```
 
