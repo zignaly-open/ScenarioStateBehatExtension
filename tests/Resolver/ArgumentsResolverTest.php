@@ -15,13 +15,17 @@ use Doctrine\Common\Annotations\Reader;
 use Gorghoa\ScenarioStateBehatExtension\Annotation\ScenarioStateArgument;
 use Gorghoa\ScenarioStateBehatExtension\Context\Initializer\ScenarioStateInitializer;
 use Gorghoa\ScenarioStateBehatExtension\ScenarioStateInterface;
+use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @author Vincent Chalamon <vincent@les-tilleuls.coop>
  */
-class ArgumentsResolverTest extends \PHPUnit_Framework_TestCase
+class ArgumentsResolverTest extends TestCase
 {
-    public function testResolve()
+    use ProphecyTrait;
+
+    public function testResolve(): void
     {
         $initializerMock = $this->prophesize(ScenarioStateInitializer::class);
         $storeMock = $this->prophesize(ScenarioStateInterface::class);

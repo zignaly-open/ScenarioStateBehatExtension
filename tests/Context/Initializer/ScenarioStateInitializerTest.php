@@ -14,19 +14,23 @@ namespace Gorghoa\ScenarioStateBehatExtension\Context\Initializer;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
 use Gorghoa\ScenarioStateBehatExtension\Context\ScenarioStateAwareContext;
 use Gorghoa\ScenarioStateBehatExtension\ScenarioState;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @author Vincent Chalamon <vincent@les-tilleuls.coop>
  */
-class ScenarioStateInitializerTest extends \PHPUnit_Framework_TestCase
+class ScenarioStateInitializerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var ScenarioStateInitializer
      */
     private $initializer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->initializer = new ScenarioStateInitializer();
         $this->assertNotNull($this->initializer->getStore());

@@ -65,18 +65,7 @@ final class RuntimeCallHandler implements CallHandler
 
             // Manage `scope` argument
             foreach ($function->getParameters() as $parameter) {
-                $type = $parameter->getType();
-
-                // Only a single, non-builtin class type can match a hook scope
-                // object. Untyped, builtin (int, string, …), union and
-                // intersection types are not matchable here. Replaces the
-                // removed (PHP 8.0) ReflectionParameter::getClass().
-                if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
-                    continue;
-                }
-
-                $className = $type->getName();
-                if ($scope instanceof $className) {
+                if (self::parameterAcceptsScope($parameter, $scope)) {
                     $arguments[$parameter->getName()] = $scope;
                     break;
                 }
@@ -92,5 +81,27 @@ final class RuntimeCallHandler implements CallHandler
         }
 
         return $this->decorated->handleCall($call);
+    }
+
+    /**
+     * Whether a hook parameter should receive the scope object.
+     *
+     * Only a single, non-builtin class type can match: the scope is injected
+     * when it is an instance of the parameter's declared class/interface.
+     * Untyped, builtin (int, string, …), union and intersection types never
+     * match. This replaces the removed (PHP 8.0) ReflectionParameter::getClass()
+     * and additionally matches parent/interface type declarations.
+     */
+    private static function parameterAcceptsScope(\ReflectionParameter $parameter, object $scope): bool
+    {
+        $type = $parameter->getType();
+
+        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+            return false;
+        }
+
+        $className = $type->getName();
+
+        return $scope instanceof $className;
     }
 }
