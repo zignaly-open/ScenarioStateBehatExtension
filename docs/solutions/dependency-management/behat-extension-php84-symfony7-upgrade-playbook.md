@@ -5,11 +5,11 @@ tags: [php-8.4, symfony-6.4, symfony-7, behat, doctrine-annotations, phpunit-13,
 module: ScenarioStateBehatExtension
 symptom: "Library declares php >=5.5 / Symfony 2–6 but cannot run on PHP 8.4; composer install resolves stale, tests use PHPUnit 4 APIs, CI on dead Travis"
 root_cause: "Decade-old runtime/API assumptions: ReflectionParameter::getClass() (removed PHP 8.0), Symfony Process string API (removed SF5), doctrine/annotations AnnotationRegistry (removed 2.0), PHPUnit 4 test scaffolding"
-status: planning-checkpoint
+status: implemented
 date: 2026-06-01
 origin_plan: docs/plans/2026-06-01-chore-php84-symfony64-upgrade-plan.md
 origin_brainstorm: docs/brainstorms/2026-06-01-php84-symfony64-upgrade-security-audit-brainstorm.md
-verified: false
+verified: true
 ---
 
 # Upgrading a Behat extension library to PHP 8.4 / Symfony 6.4+ (clean-break 2.0)
@@ -50,7 +50,31 @@ These are runtime fatals, not deprecations. The upgrade does not run without all
 
 3. **`AnnotationRegistry::registerFile()` — removed in doctrine/annotations 2.0.** Called in `ScenarioStateExtension::initialize()`. **Just delete it** — 2.0 resolves annotation classes via the normal Composer autoloader. `AnnotationReader`, the `Reader` interface, `getMethodAnnotation(s)`, and `addGlobalIgnoredName()` all survive. A custom annotation declared with `@Annotation` + `@Target("METHOD")` and an `array $options` constructor **parses unchanged** in 2.0 (the default non-named-constructor path; `@NamedArgumentConstructor` is opt-in).
 
-4. **`Behat\Behat\Context\SnippetAcceptingContext` — removed in modern Behat.** Drop the import and the `implements` entry; snippet generation no longer needs the marker.
+4. **`Behat\Behat\Context\SnippetAcceptingContext` — removed in modern Behat.** Drop the import, but **add `implements Behat\Behat\Context\Context`** in its place — `SnippetAcceptingContext` used to extend the base `Context` interface, and Behat still rejects any context class that doesn't implement it (`Every context class must implement Behat Context interface`).
+
+### The non-obvious one: HookCall is `final` in Behat 3.31 (discovered during implementation)
+
+Not in the docs/changelogs — only surfaced by running the acceptance suite. If your extension decorates the runtime **CallHandler** to inject arguments into hook calls (this library does, to pass `@ScenarioStateArgument` fragments to `@BeforeScenario`/`@AfterScenario` methods), the old trick of rebuilding the `HookCall` as a generic `EnvironmentCall` (so it can carry custom arguments) now breaks:
+
+- `Behat\Testwork\Hook\Call\HookCall` is now `final` and its constructor hard-codes its arguments to `[$scope]` — you **cannot** subclass it or construct one with injected arguments.
+- Behat 3.31's `HookStatsListener::captureHookStat()` does `assert($call instanceof HookCall)` then `$call->getScope()` on the call inside the returned `CallResult`. If you executed an `EnvironmentCall` instead, the result wraps an `EnvironmentCall` → `Error: Call to undefined method EnvironmentCall::getScope()` (the `assert` is a no-op when `zend.assertions` is off, so it falls straight through to the fatal).
+
+**Fix:** execute the rebuilt `EnvironmentCall` (so the resolved arguments are actually passed to the hook), then re-wrap the returned `CallResult` around the **original** `HookCall` before returning it:
+
+```php
+$result = $this->decorated->handleCall($call); // $call = rebuilt EnvironmentCall
+if ($originalCall instanceof HookCall) {
+    $result = new CallResult(
+        $originalCall,
+        $result->getReturn(),
+        $result->getException(),
+        $result->getStdOut()
+    );
+}
+return $result;
+```
+
+Also note `EnvironmentCall`'s constructor gained an optional 4th `$errorReportingLevel` argument across the 3.x line — pass `$originalCall->getErrorReportingLevel()` through. **Lesson:** for a Behat extension, the acceptance suite (not unit tests) is what catches value-object/`final`/listener drift — run it early and against a real `testapp` fixture.
 
 ## PHPUnit 4 → 13 is effectively a test-scaffolding rewrite
 

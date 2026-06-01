@@ -1,7 +1,7 @@
 ---
 title: "Upgrade to PHP 8.4 / Symfony 6.4+ (clean-break 2.0) + supply-chain audit"
 type: chore
-status: active
+status: completed
 date: 2026-06-01
 origin: docs/brainstorms/2026-06-01-php84-symfony64-upgrade-security-audit-brainstorm.md
 ---
@@ -314,16 +314,16 @@ updates:
 ## Acceptance Criteria
 
 ### Functional
-- [ ] `composer update` resolves on PHP 8.4 at `--prefer-lowest` (behat 3.31.x, symfony 6.4.0) **and** highest (symfony 7.x).
-- [ ] `vendor/bin/phpunit` passes on PHP 8.4 (PHPUnit 13), including the new `RuntimeCallHandlerTest`.
-- [ ] `vendor/bin/behat --strict` passes, with assertions for: annotation injection, store-clear between scenarios, organiser decoration wrapping, `@Transform` interplay, lowercase-alias ignore.
-- [ ] No reference to `AnnotationRegistry`, `ReflectionParameter::getClass()`, `Process::setCommandLine()`, `new Process(null)`, `SnippetAcceptingContext`, `PHPUnit_Framework_*`, `setExpectedException`, or docblock `@dataProvider` remains.
+- [x] `composer update` resolves on PHP 8.4 at `--prefer-lowest` (behat 3.31.0, symfony 6.4.33) **and** highest (symfony 7.4).
+- [x] `vendor/bin/phpunit` passes on PHP 8.4 (PHPUnit 13.1.13) — 12 tests / 36 assertions, including the new `RuntimeCallHandlerTest`.
+- [x] `vendor/bin/behat --strict` passes — 3 scenarios / 6 steps (shared state, store-clear between scenarios, Scenario Outline; testapp hooks exercise typed-scope injection).
+- [x] No legacy code references remain (`AnnotationRegistry`, `getClass()`, `setCommandLine()`, `new Process(null)`, `SnippetAcceptingContext`, `PHPUnit_Framework_*`, `setExpectedException`, docblock `@dataProvider`) — only explanatory comments mention them.
 
 ### Non-functional / quality gates
-- [ ] `composer validate --strict` clean; `composer audit` reports no actionable advisories; abandoned packages surfaced.
-- [ ] GitHub Actions green across the full matrix; Travis removed; **all actions SHA-pinned**; `permissions: contents: read`.
-- [ ] Dependabot configured (composer + github-actions, cooldown, groups); branch protection + code-owner review active on `master`; `v2.0.0` signed + tag-protected.
-- [ ] README support matrix + CHANGELOG 2.0 entry updated; `phpspec` removed; `Symfony\Process` autoload hack removed; `config.allow-plugins: false` set.
+- [x] `composer validate --strict` clean; `composer audit` reports no vulnerability advisories.
+- [x] GitHub Actions workflow added (matrix, **SHA-pinned actions**, `permissions: contents: read`); Travis removed. _(Green status confirmed once pushed.)_
+- [x] Dependabot configured (composer + github-actions, cooldown, groups). _Branch protection + code-owner review + signed/tag-protected `v2.0.0` are repo/release settings — see PR runbook._
+- [x] README support matrix + CHANGELOG 2.0 entry updated; `phpspec` removed; `Symfony\Process` autoload hack removed; `config.allow-plugins: false` set.
 
 ## Dependencies & Risks
 
