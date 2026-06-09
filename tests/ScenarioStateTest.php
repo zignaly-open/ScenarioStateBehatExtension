@@ -12,15 +12,16 @@
 namespace Gorghoa\ScenarioStateBehatExtension;
 
 use Gorghoa\ScenarioStateBehatExtension\Exception\MissingStateException;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Walter Dolce <walterdolce@gmail.com>
  */
-class ScenarioStateTest extends \PHPUnit_Framework_TestCase
+class ScenarioStateTest extends TestCase
 {
-    public function testItThrowsExceptionWhenStateIsMissing()
+    public function testItThrowsExceptionWhenStateIsMissing(): void
     {
-        $this->setExpectedException(MissingStateException::class);
+        $this->expectException(MissingStateException::class);
         (new ScenarioState())->getStateFragment('not_existing_state');
     }
 }

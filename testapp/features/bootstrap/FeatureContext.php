@@ -60,7 +60,7 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function saveBananasWithoutScopeBeforeScenario(array $bananas)
     {
-        \PHPUnit_Framework_Assert::assertEquals(['foo', 'bar'], $bananas);
+        \PHPUnit\Framework\Assert::assertEquals(['foo', 'bar'], $bananas);
     }
 
     /**
@@ -73,8 +73,8 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function saveBananasWithScopeBeforeScenario(BeforeScenarioScope $scope, array $bananas)
     {
-        \PHPUnit_Framework_Assert::assertNotNull($scope);
-        \PHPUnit_Framework_Assert::assertEquals(['foo', 'bar'], $bananas);
+        \PHPUnit\Framework\Assert::assertNotNull($scope);
+        \PHPUnit\Framework\Assert::assertEquals(['foo', 'bar'], $bananas);
     }
 
     /**
@@ -84,7 +84,7 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function initApplesBeforeScenario(BeforeScenarioScope $scope)
     {
-        \PHPUnit_Framework_Assert::assertNotNull($scope);
+        \PHPUnit\Framework\Assert::assertNotNull($scope);
     }
 
     /**
@@ -96,7 +96,7 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function saveBananasWithoutScopeAfterScenario(array $bananas)
     {
-        \PHPUnit_Framework_Assert::assertEquals(['foo', 'bar'], $bananas);
+        \PHPUnit\Framework\Assert::assertEquals(['foo', 'bar'], $bananas);
     }
 
     /**
@@ -109,8 +109,8 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function saveBananasWithScopeAfterScenario(array $bananas, AfterScenarioScope $scope)
     {
-        \PHPUnit_Framework_Assert::assertNotNull($scope);
-        \PHPUnit_Framework_Assert::assertEquals(['foo', 'bar'], $bananas);
+        \PHPUnit\Framework\Assert::assertNotNull($scope);
+        \PHPUnit\Framework\Assert::assertEquals(['foo', 'bar'], $bananas);
     }
 
     /**
@@ -120,7 +120,7 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function initApplesAfterScenario(AfterScenarioScope $scope)
     {
-        \PHPUnit_Framework_Assert::assertNotNull($scope);
+        \PHPUnit\Framework\Assert::assertNotNull($scope);
     }
 
     /**
@@ -160,7 +160,7 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function giveBananaToGorilla($scenarioBanana, Gorilla $gorilla)
     {
-        \PHPUnit_Framework_Assert::assertEquals('Yammy Banana', $scenarioBanana);
+        \PHPUnit\Framework\Assert::assertEquals('Yammy Banana', $scenarioBanana);
         $gorilla->setBanana($scenarioBanana);
         $this->scenarioState->provideStateFragment('scenarioGorilla', $gorilla);
     }
@@ -176,8 +176,8 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function gorillaHasBanana($scenarioBanana, Gorilla $gorilla)
     {
-        \PHPUnit_Framework_Assert::assertEquals('Yammy Banana', $scenarioBanana);
-        \PHPUnit_Framework_Assert::assertEquals('Yammy Banana', $gorilla->getBanana());
+        \PHPUnit\Framework\Assert::assertEquals('Yammy Banana', $scenarioBanana);
+        \PHPUnit\Framework\Assert::assertEquals('Yammy Banana', $gorilla->getBanana());
     }
 
     /**
@@ -190,6 +190,6 @@ class FeatureContext implements ScenarioStateAwareContext
      */
     public function gorillaIsCorrectlyNamed($name, Gorilla $gorilla)
     {
-        \PHPUnit_Framework_Assert::assertEquals($name, $gorilla->getName());
+        \PHPUnit\Framework\Assert::assertEquals($name, $gorilla->getName());
     }
 }

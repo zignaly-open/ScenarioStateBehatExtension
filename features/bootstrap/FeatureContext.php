@@ -28,7 +28,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-use Behat\Behat\Context\SnippetAcceptingContext;
+use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -36,7 +36,7 @@ use Symfony\Component\Process\Process;
 /**
  * @author Christophe Coevoet
  */
-class FeatureContext implements SnippetAcceptingContext
+class FeatureContext implements Context
 {
     /**
      * @var string
@@ -60,7 +60,6 @@ class FeatureContext implements SnippetAcceptingContext
             throw new \RuntimeException('Unable to find the PHP executable.');
         }
         $this->phpBin = $php;
-        $this->process = new Process(null);
     }
 
     /**
@@ -74,8 +73,9 @@ class FeatureContext implements SnippetAcceptingContext
     {
         $argumentsString = strtr($argumentsString, ['\'' => '"']);
 
-        $this->process->setWorkingDirectory(__DIR__.'/../../testapp');
-        $this->process->setCommandLine(
+        // Symfony 5+ removed the string Process constructor and setCommandLine();
+        // build the process from the shell command line instead.
+        $this->process = Process::fromShellCommandline(
             sprintf(
                 '%s %s %s %s',
                 $this->phpBin,
@@ -84,6 +84,7 @@ class FeatureContext implements SnippetAcceptingContext
                 strtr('--lang=en --format-settings=\'{"timer": false}\'', ['\'' => '"', '"' => '\"'])
             )
         );
+        $this->process->setWorkingDirectory(__DIR__.'/../../testapp');
         $this->process->run();
     }
 
@@ -110,7 +111,7 @@ class FeatureContext implements SnippetAcceptingContext
      */
     public function theOutputShouldContain(PyStringNode $text)
     {
-        \PHPUnit_Framework_Assert::assertContains($this->getExpectedOutput($text), $this->getOutput());
+        \PHPUnit\Framework\Assert::assertStringContainsString($this->getExpectedOutput($text), $this->getOutput());
     }
 
     /**
@@ -164,13 +165,13 @@ class FeatureContext implements SnippetAcceptingContext
                 echo 'Actual output:'.PHP_EOL.PHP_EOL.$this->getOutput();
             }
 
-            \PHPUnit_Framework_Assert::assertNotEquals(0, $this->getExitCode());
+            \PHPUnit\Framework\Assert::assertNotEquals(0, $this->getExitCode());
         } else {
             if (0 !== $this->getExitCode()) {
                 echo 'Actual output:'.PHP_EOL.PHP_EOL.$this->getOutput();
             }
 
-            \PHPUnit_Framework_Assert::assertEquals(0, $this->getExitCode());
+            \PHPUnit\Framework\Assert::assertEquals(0, $this->getExitCode());
         }
     }
 

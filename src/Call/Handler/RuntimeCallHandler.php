@@ -13,6 +13,7 @@ namespace Gorghoa\ScenarioStateBehatExtension\Call\Handler;
 
 use Behat\Behat\Transformation\Call\TransformationCall;
 use Behat\Testwork\Call\Call;
+use Behat\Testwork\Call\CallResult;
 use Behat\Testwork\Call\Handler\CallHandler;
 use Behat\Testwork\Environment\Call\EnvironmentCall;
 use Behat\Testwork\Hook\Call\HookCall;
@@ -59,13 +60,14 @@ final class RuntimeCallHandler implements CallHandler
         /** @var \ReflectionMethod $function */
         $function = $call->getCallee()->getReflection();
         $arguments = $call->getArguments();
+        $originalCall = $call;
 
         if ($call instanceof HookCall) {
             $scope = $call->getScope();
 
             // Manage `scope` argument
             foreach ($function->getParameters() as $parameter) {
-                if (null !== $parameter->getClass() && get_class($scope) === $parameter->getClass()->getName()) {
+                if (self::parameterAcceptsScope($parameter, $scope)) {
                     $arguments[$parameter->getName()] = $scope;
                     break;
                 }
@@ -77,9 +79,53 @@ final class RuntimeCallHandler implements CallHandler
         if ($call instanceof TransformationCall) {
             $call = new TransformationCall($call->getEnvironment(), $call->getDefinition(), $call->getCallee(), $arguments);
         } elseif ($call instanceof HookCall) {
-            $call = new EnvironmentCall($call->getScope()->getEnvironment(), $call->getCallee(), $arguments);
+            // HookCall is final and forces its arguments to [$scope], so it
+            // cannot carry the resolved arguments. Execute the call as a generic
+            // EnvironmentCall instead.
+            $call = new EnvironmentCall(
+                $call->getScope()->getEnvironment(),
+                $call->getCallee(),
+                $arguments,
+                $call->getErrorReportingLevel()
+            );
         }
 
-        return $this->decorated->handleCall($call);
+        $result = $this->decorated->handleCall($call);
+
+        // Behat associates hook statistics with the original HookCall and calls
+        // getScope() on it; since hooks are executed through a rebuilt
+        // EnvironmentCall, re-wrap the result around the original HookCall.
+        if ($originalCall instanceof HookCall) {
+            $result = new CallResult(
+                $originalCall,
+                $result->getReturn(),
+                $result->getException(),
+                $result->getStdOut()
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Whether a hook parameter should receive the scope object.
+     *
+     * Only a single, non-builtin class type can match: the scope is injected
+     * when it is an instance of the parameter's declared class/interface.
+     * Untyped, builtin (int, string, …), union and intersection types never
+     * match. This replaces the removed (PHP 8.0) ReflectionParameter::getClass()
+     * and additionally matches parent/interface type declarations.
+     */
+    private static function parameterAcceptsScope(\ReflectionParameter $parameter, object $scope): bool
+    {
+        $type = $parameter->getType();
+
+        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+            return false;
+        }
+
+        $className = $type->getName();
+
+        return $scope instanceof $className;
     }
 }

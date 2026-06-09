@@ -16,13 +16,17 @@ use Doctrine\Common\Annotations\Reader;
 use Gorghoa\ScenarioStateBehatExtension\Annotation\ScenarioStateArgument;
 use Gorghoa\ScenarioStateBehatExtension\Context\Initializer\ScenarioStateInitializer;
 use Gorghoa\ScenarioStateBehatExtension\ScenarioStateInterface;
+use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-class ScenarioStateArgumentOrganiserTest extends \PHPUnit_Framework_TestCase
+class ScenarioStateArgumentOrganiserTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var ScenarioStateArgumentOrganiser
      */
@@ -58,7 +62,7 @@ class ScenarioStateArgumentOrganiserTest extends \PHPUnit_Framework_TestCase
      */
     private $annotationMock;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->organiserMock = $this->prophesize(ArgumentOrganiser::class);
         $this->initializerMock = $this->prophesize(ScenarioStateInitializer::class);

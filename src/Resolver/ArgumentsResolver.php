@@ -74,7 +74,10 @@ class ArgumentsResolver
         $params = [];
         foreach ($function->getParameters() as $parameter) {
             $name = $parameter->getName();
-            $params[$name] = isset($arguments[$name]) ? $arguments[$name] : $arguments[$parameter->getPosition()];
+            // Fall back to the positional argument; null when neither is present
+            // (the downstream call then reports the unresolved argument). The
+            // null-coalescing avoids an "undefined array key" warning on PHP 8+.
+            $params[$name] = $arguments[$name] ?? $arguments[$parameter->getPosition()] ?? null;
         }
 
         return $params;

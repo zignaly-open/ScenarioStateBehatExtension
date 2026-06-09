@@ -1,0 +1,160 @@
+{
+  "pr_number": 3,
+  "pr_title": "chore: upgrade to PHP 8.4 / Symfony 6.4+ (clean-break 2.0) + supply-chain hardening",
+  "created_at": "2026-06-01T02:26:19Z",
+  "updated_at": "2026-06-01T02:26:19Z",
+  "ai_snapshot": {
+    "created_at": "2026-06-01T02:26:19Z",
+    "grade": "A",
+    "raw": 0,
+    "findings_count": 0,
+    "breakdown": { "critical": 0, "high": 0, "medium": 0, "low": 0 }
+  },
+  "total": {
+    "grade": "D",
+    "raw": 16,
+    "weighted": 19.2,
+    "findings_count": 11,
+    "in_scope_count": 11,
+    "breakdown": { "critical": 0, "high": 0, "medium": 5, "low": 6 }
+  },
+  "iterations": { "ai_review": 1, "human_review": 0 },
+  "exit_condition": { "met": true, "reason": "All P1 findings resolved" },
+  "findings": [
+    {
+      "issue_id": "1",
+      "severity": "medium",
+      "status": "resolved",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "quality",
+      "file": "src/Resolver/ArgumentsResolver.php",
+      "line": 77,
+      "description": "Positional-fallback emitted PHP 8.4 'undefined array key' warning under behat --strict; fixed via null-coalescing (behavior preserved).",
+      "resolved_at": "2026-06-01T02:26:19Z"
+    },
+    {
+      "issue_id": "2",
+      "severity": "low",
+      "status": "resolved",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "testing",
+      "file": "tests/Call/Handler/RuntimeCallHandlerTest.php",
+      "line": 0,
+      "description": "getType() contract lacked union/intersection/nullable coverage; added rows (15 tests/39 assertions).",
+      "resolved_at": "2026-06-01T02:26:19Z"
+    },
+    {
+      "issue_id": "3",
+      "severity": "medium",
+      "status": "resolved",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "docs",
+      "file": "docs/solutions/dependency-management/behat-extension-php84-symfony7-upgrade-playbook.md",
+      "line": 17,
+      "description": "Frontmatter verified:true contradicted the 'not yet runtime-verified' checkpoint note; replaced with verified status.",
+      "resolved_at": "2026-06-01T02:26:19Z"
+    },
+    {
+      "issue_id": "4",
+      "severity": "medium",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "architecture",
+      "file": "src/Call/Handler/RuntimeCallHandler.php",
+      "line": 0,
+      "description": "Widened instanceof + first-match break could bind scope to the wrong parameter if a hook declares two object-typed params (first a parent/interface the scope satisfies). Contrived but a behavior change. Fix: exact-name match before instanceof, or document first-assignable-wins."
+    },
+    {
+      "issue_id": "5",
+      "severity": "medium",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "pattern",
+      "file": "src/Call/Handler/RuntimeCallHandler.php",
+      "line": 108,
+      "description": "parameterAcceptsScope() is the only typed method in an otherwise phpdoc-only untyped file. Either type the two edited public methods too, or revert helper to phpdoc-only."
+    },
+    {
+      "issue_id": "6",
+      "severity": "medium",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "pattern",
+      "file": "tests/Call/Handler/RuntimeCallHandlerTest.php",
+      "line": 16,
+      "description": "Declares two top-level fixture types inline (no repo precedent; soft PSR-4/one-class-per-file smell). Move to a dedicated fixtures file or reuse real Behat scope classes."
+    },
+    {
+      "issue_id": "7",
+      "severity": "low",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "pattern",
+      "file": "tests/Resolver/ArgumentsResolverTest.php",
+      "line": 27,
+      "description": "ProphecyTrait placement differs from the other two prophecy tests; align as first class member + blank line."
+    },
+    {
+      "issue_id": "8",
+      "severity": "low",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "pattern",
+      "file": "tests/Call/Handler/RuntimeCallHandlerTest.php",
+      "line": 0,
+      "description": "Data-provider naming (parameterMatchingProvider) drifts from ScenarioStateArgumentTest::getArguments. Optional consistency nit."
+    },
+    {
+      "issue_id": "9",
+      "severity": "low",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "docs",
+      "file": "src/Call/Handler/RuntimeCallHandler.php",
+      "line": 0,
+      "description": "Docblock note that self/parent type declarations resolve to literal 'self'/'parent' and never match (harmless; no real fixture uses them)."
+    },
+    {
+      "issue_id": "10",
+      "severity": "low",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "ci",
+      "file": ".github/workflows/ci.yml",
+      "line": 53,
+      "description": "composer audit on a lock-free library is non-deterministic over time (green today can go red tomorrow with no code change). Informational; acceptable for a test tool."
+    },
+    {
+      "issue_id": "11",
+      "severity": "low",
+      "status": "open",
+      "source": "human",
+      "author": "MIGUEL ANGEL GARZON MALDONADO",
+      "scope": "in_scope",
+      "category": "ci",
+      "file": "composer.json",
+      "line": 26,
+      "description": "roave/security-advisories: dev-latest is a moving dev constraint with no minimum-stability/prefer-stable; CI conflict set is non-reproducible. Informational."
+    }
+  ]
+}

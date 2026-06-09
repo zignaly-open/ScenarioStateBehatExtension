@@ -11,29 +11,23 @@
 
 namespace Gorghoa\ScenarioStateBehatExtension\Annotation;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
 /**
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
-class ScenarioStateArgumentTest extends \PHPUnit_Framework_TestCase
+class ScenarioStateArgumentTest extends TestCase
 {
-    /**
-     * @dataProvider getArguments
-     *
-     * @param array  $arguments
-     * @param string $name
-     * @param string $argument
-     */
-    public function testWithValue(array $arguments, $name, $argument)
+    #[DataProvider('getArguments')]
+    public function testWithValue(array $arguments, string $name, string $argument): void
     {
         $annotation = new ScenarioStateArgument($arguments);
         $this->assertEquals($name, $annotation->name);
         $this->assertEquals($argument, $annotation->argument);
     }
 
-    /**
-     * @return array
-     */
-    public function getArguments()
+    public static function getArguments(): array
     {
         return [
             [
